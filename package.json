@@ -2,6 +2,7 @@
   "name": "craneduino",
   "version": "0.0.0",
   "private": true,
+  "bin": "./bin/www",
   "scripts": {
     "start": "node ./bin/www"
   },

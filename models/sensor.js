@@ -12,11 +12,14 @@ var sensorSchema = new mongoose.Schema({
   type: {
     type: String,
     default: 'General',
-    enum: 'General Potentiometer Temperature LDR Pressure'.split(' ')
+    enum: 'General Temperature LDR Pressure Volume Distance Voltage Pulse Shock Humidity SeismicActivity AirFlow WaterLevel UltrasonicSensor Gyroscope'.split(' '),
+    required: true
   },
   pin: {
     type: String,
-    default: "A0"
+    default: 'A0',
+    enum: 'None A0 A1 A2 A3 A4 A5'.split(' '),
+    required: true
   },
   unit: {
     type: String,
@@ -26,11 +29,13 @@ var sensorSchema = new mongoose.Schema({
   range: {
     min: {
       type: Number,
-      default: 0
+      default: 0,
+      required: true
     },
     max: {
       type: Number,
-      default: 1023
+      default: 1023,
+      required: true
     }
   }
 });

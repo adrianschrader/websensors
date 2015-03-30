@@ -1,0 +1,32 @@
+{
+  "name": "craneduino",
+  "version": "0.0.0",
+  "homepage": "https://github.com/adrianschrader/craneduino",
+  "authors": [
+    "Adrian Schrader <moddinator@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "angular": "1.2.x",
+    "angular-route": "1.2.x",
+    "angular-loader": "1.2.x",
+    "angular-mocks": "~1.2.x",
+    "html5-boilerplate": "~4.3.0",
+    "angular-bootstrap": "~0.12.1",
+    "bootstrap": "~3.3.4",
+    "angular-flot": "~0.0.6",
+    "valdr": "~1.1.1",
+    "angular-bootstrap-slider": "~0.1.1",
+    "jquery": "~2.1.3"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "resolutions": {
+    "angular": "1.3.15"
+  }
+}

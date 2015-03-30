@@ -6,9 +6,9 @@ var mongoose  = require('mongoose'),
     Series = require('../models/series'),
     router = express.Router();
 
-var board, series, sensors, occupied = false;
+var board, series, sensors, occupied = false, connected = false;
 
-board = five.Board();
+//board = five.Board();
 
 var endMessurement = function endMessurement() {
   Series.findOne({ _id: series._id }, function(err, series){
@@ -33,6 +33,9 @@ var initialize = function initialize() {
 
   for (var i = 0; i < series.sensors.length; i++) {
     var sensor = series.sensors[i];
+
+    if (sensor.pin != 'None')
+      continue;
 
     var new_sensor = new five.Sensor({
       pin: sensor.pin,
@@ -78,7 +81,10 @@ router.get('/series/:id/start', function(req, res, next) {
     }
 
     if (occupied)
-      return next("Arduino already occupied with another series. ");
+      return next(new Error("Arduino already occupied with another series. "));
+
+    if (!connection)
+      return next(new Error("There is no Arduino connection. "));
 
     // Set properties in series
     obj.status = 'InProgress';

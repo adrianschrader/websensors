@@ -1,0 +1,138 @@
+<div class="page-header">
+  <h1>Sensoren <small>Detailansicht</small></h1>
+</div>
+
+<div class="row">
+
+<div class="list-group col-md-3">
+  <!--<a class="list-group-item" href="/#/sensors/{{sensor._id}}" active ng-repeat="sensor in sensorList">
+    <h4  class="list-group-item-heading">
+      {{sensor.name}}
+    </h4>
+  </a>-->
+  <ul class="nav nav-pills nav-stacked">
+    <li role="presentation" class="{{nsensor._id == sensor._id ? 'active' : ''}}" ng-repeat="nsensor in sensorList">
+      <a href="/#/sensors/{{nsensor._id}}">{{nsensor.name}}<span class="badge">{{nsensor.pin}}</span></a>
+    </li>
+    <li role="presentation" ng-hide="sensorList.length >= 6" class="success {{ createMode ? 'active' : ''}}">
+      <a href="/#/sensors?create=true">
+        <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+        Neuen Sensor hinzufügen ({{sensorList.length}}/6)
+      </a>
+    </li>
+    <li role="presentation" ng-show="sensorList.length >= 6">
+      <a href="/#/sensors/{{sensor._id}}">
+        <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+        Maximale Anzahl erreicht ({{sensorList.length}}/6)
+      </a>
+    </li>
+  </ul>
+</div>
+
+<div class="col-md-9 col-sm-12">
+  <form name="sensorForm" role="form" class="form-horizontal" novalidate valdr-type="Sensor">
+      <div class="form-group">
+        <label for="name"
+          class="col-md-2 control-label">Name</label>
+        <div valdr-form-group class="col-md-10">
+          <input type="text" id="name" name="name"
+          class="form-control" placeholder="Name" ng-model="sensor.name"/>
+        </div>
+      </div>
+      <div  class="form-group">
+        <label for="description"
+          class="col-md-2 control-label">Beschreibung</label>
+        <div valdr-form-group class="col-md-10">
+          <textarea id="description" name="description" class="form-control"
+            placeholder="Beschreibung" ng-model="sensor.description"></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="type" class="col-md-2 control-label">Typ</label>
+        <div valdr-form-group class="col-md-10">
+          <select id="type" name="type" class="form-control" ng-model="sensor.type">
+            <option ng-repeat="sensorType in sensorTypes"
+            value="{{sensorType.name}}">{{sensorType.displayName}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="pin"
+        class="col-md-2 control-label">Pin</label>
+        <div valdr-form-group class="col-md-7">
+          <div id="pin" class="btn-group">
+            <label class="btn btn-primary" name="pin" ng-disabled="disabled.A0 || pinUndefined" ng-model="sensor.pin"
+            btn-radio="'A0'">A0</label>
+            <label class="btn btn-primary" name="pin" ng-disabled="disabled.A1 || pinUndefined" ng-model="sensor.pin"
+            btn-radio="'A1'">A1</label>
+            <label class="btn btn-primary" name="pin" ng-disabled="disabled.A2 || pinUndefined" ng-model="sensor.pin"
+            btn-radio="'A2'">A2</label>
+            <label class="btn btn-primary" name="pin" ng-disabled="disabled.A3 || pinUndefined" ng-model="sensor.pin"
+            btn-radio="'A3'">A3</label>
+            <label class="btn btn-primary" name="pin" ng-disabled="disabled.A4 || pinUndefined" ng-model="sensor.pin"
+            btn-radio="'A4'">A4</label>
+            <label class="btn btn-primary" name="pin" ng-disabled="disabled.A5 || pinUndefined" ng-model="sensor.pin"
+            btn-radio="'A5'">A5</label>
+          </div>
+          <input type="checkbox" style="margin-left: 10pt" ng-model="pinUndefined" /> Nicht angeschlossen
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="unit"
+        class="col-md-2 control-label">Einheit</label>
+        <div valdr-form-group class="col-md-10">
+          <input type="text" id="unit" name="unit"
+          class="form-control" placeholder="Einheit" ng-model="sensor.unit"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="rangeMin" class="col-md-2 control-label">Wertebereich (Min)</label>
+        <div valdr-form-group class="col-md-10">
+          <!--<slider range="true" name="sensorRange" ng-model="sensor.raw_range" step="5" min="-500" max="500"></slider>-->
+          <input type="text" id="rangeMin" name="range.min"
+          class="form-control" placeholder="Wertebereich (Minimum)" ng-model="sensor.range.min"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="rangeMax" class="col-md-2 control-label">Wertebereich (Max)</label>
+        <div valdr-form-group class="col-md-10">
+          <!--<slider range="true" name="sensorRange" ng-model="sensor.raw_range" step="5" min="-500" max="500"></slider>-->
+          <input type="text" id="rangeMax" name="range.max"
+          class="form-control" placeholder="Wertebereich (Maximum)" ng-model="sensor.range.max"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="sensorSave" class="col-md-2 control-label"></label>
+        <div valdr-form-group class="col-md-10">
+          <button class="btn btn-primary" ng-disabled="saving || sensorForm.$invaild" ng-click="update()">
+            <span class="glyphicon {{ createMode ? glyphicon-plus-sign : 'glyphicon-floppy-save'" aria-hidden="true"></span>
+            {{ createMode ? 'Hinzufügen' : 'Änderungen speichern' }} {{ saving ? '...' : '' }}
+          </button>
+          <button class="btn btn-danger" ng-hide="createMode" ng-disabled="deleting" ng-click="delete()">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            Löschen{{ deleting ? '...' : '' }}
+          </button>
+        </div>
+      </div>
+  </form>
+
+  <script type="text/ng-template" id="deleteConfirm.html">
+    <div class="modal-header">
+    <h3 class="modal-title">Löschen eines Sensors</h3>
+    </div>
+    <div class="modal-body">
+    <p>
+      Sind Sie sich sicher, dass sie den Sensor <b>{{sensor.name}}</b> auf Pin {{sensor.pin}} <b>unwiederruflich</b> löschen möchten?
+    </p>
+    </div>
+    <div class="modal-footer">
+    <button class="btn btn-danger" ng-click="confirm()">
+      <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+      Unwiederruflich Löschen
+    </button>
+    <button class="btn btn-warning" ng-click="cancel()">Abbrechen</button>
+    </div>
+  </script>
+
+</div>
+</div>
