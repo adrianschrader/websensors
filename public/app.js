@@ -23,5 +23,13 @@ angular.module('craneduino', [
     templateUrl: 'views/sensors/sensors.html',
     controller: 'SensorsCtrl'
   })
+  .when('/series', {
+    templateUrl: 'views/series/series.html',
+    controller: 'SeriesCtrl'
+  })
+  .when('/series/:seriesId', {
+    templateUrl: 'views/series/series.html',
+    controller: 'SeriesCtrl'
+  })
   .otherwise({ redirectTo: '/home' });
 }]);

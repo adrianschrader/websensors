@@ -105,7 +105,6 @@ function($scope, $resource, $routeParams, valdr, $modal, $location) {
     $scope.disabled = {};
     var freePins = [ 'A0', 'A1', 'A2', 'A3', 'A4', 'A5' ];
     for (var i = $scope.sensorList.length - 1; i > -1; i--) {
-      console.log($scope.disabled);
       $scope.disabled[$scope.sensorList[i].pin] = true;
       freePins.splice(freePins.indexOf($scope.sensorList[i].pin),1);
     }

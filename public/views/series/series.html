@@ -1,0 +1,131 @@
+<div class="page-header">
+  <h1>Messreihen <small>Detailansicht</small></h1>
+</div>
+
+<div class="row">
+
+<div class="list-group col-md-3">
+  <!--<a class="list-group-item" href="/#/series/{{series._id}}" active ng-repeat="series in seriesList">
+    <h4  class="list-group-item-heading">
+      {{series.name}}
+    </h4>
+  </a>-->
+  <ul class="nav nav-pills nav-stacked">
+    <li role="presentation" class="{{nseries._id == series._id ? 'active' : ''}}" ng-repeat="nseries in seriesList">
+      <a href="/#/series/{{nseries._id}}">{{nseries.name}}<span class="badge">{{nseries.status}}</span></a>
+    </li>
+    <li role="presentation" class="success {{ createMode ? 'active' : ''}}">
+      <a href="/#/series?create=true">
+        <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+        Neue Messreihe hinzufügen ({{seriesList.length}}/6)
+      </a>
+    </li>
+    <!--<li role="presentation" ng-show="ReadingList.length >= 6">
+      <a href="/#/series/{{series._id}}">
+        <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+        Maximale Anzahl erreicht ({{seriesList.length}}/6)
+      </a>
+    </li>-->
+  </ul>
+</div>
+
+<div class="col-md-9 col-sm-12">
+  <form name="seriesForm" role="form" class="form-horizontal" novalidate valdr-type="Series">
+      <div class="form-group">
+        <label for="name"
+          class="col-md-2 control-label">Name</label>
+        <div valdr-form-group class="col-md-10">
+          <input type="text" id="name" name="name"
+          class="form-control" placeholder="Name" ng-model="series.name"/>
+        </div>
+      </div>
+      <div  class="form-group">
+        <label for="description"
+          class="col-md-2 control-label">Beschreibung</label>
+        <div valdr-form-group class="col-md-10">
+          <textarea id="description" name="description" class="form-control"
+            placeholder="Beschreibung" ng-model="series.description"></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="status" class="col-md-2 control-label">Status</label>
+        <div valdr-form-group class="col-md-10">
+          <p id="status" class="form-control-static" ng-model="series.status"></p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="priority"
+        class="col-md-2 control-label">Priorität</label>
+        <div class="col-md-10">
+          <!--<div id="priority" class="btn-group">
+            <label class="btn btn-default" ng-model="series.priority"
+            btn-radio="'-1'">Niedrig</label>
+            <label class="btn btn-primary" ng-model="series.priority"
+            btn-radio="'0'">Normal</label>
+            <label class="btn btn-warning" ng-model="series.priority"
+            btn-radio="'1'">Wichtig</label>
+            <label class="btn btn-danger" ng-model="series.priority"
+            btn-radio="'2'">Sehr Wichtig</label>
+          </div>-->
+          <input id="priority" name="priority" type="text" value="0"  />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="unit"
+        class="col-md-2 control-label">Einheit</label>
+        <div valdr-form-group class="col-md-10">
+          <input type="text" id="unit" name="unit"
+          class="form-control" placeholder="Einheit" ng-model="series.unit"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="rangeMin" class="col-md-2 control-label">Wertebereich (Min)</label>
+        <div valdr-form-group class="col-md-10">
+          <!--<slider range="true" name="seriesRange" ng-model="series.raw_range" step="5" min="-500" max="500"></slider>-->
+          <input type="text" id="rangeMin" name="range.min"
+          class="form-control" placeholder="Wertebereich (Minimum)" ng-model="series.range.min"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="rangeMax" class="col-md-2 control-label">Wertebereich (Max)</label>
+        <div valdr-form-group class="col-md-10">
+          <!--<slider range="true" name="seriesRange" ng-model="series.raw_range" step="5" min="-500" max="500"></slider>-->
+          <input type="text" id="rangeMax" name="range.max"
+          class="form-control" placeholder="Wertebereich (Maximum)" ng-model="series.range.max"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="seriesSave" class="col-md-2 control-label"></label>
+        <div valdr-form-group class="col-md-10">
+          <button class="btn btn-primary" ng-disabled="saving || seriesForm.$invaild" ng-click="update()">
+            <span class="glyphicon {{ createMode ? glyphicon-plus-sign : 'glyphicon-floppy-save'" aria-hidden="true"></span>
+            {{ createMode ? 'Hinzufügen' : 'Änderungen speichern' }} {{ saving ? '...' : '' }}
+          </button>
+          <button class="btn btn-danger" ng-hide="createMode" ng-disabled="deleting" ng-click="delete()">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            Löschen{{ deleting ? '...' : '' }}
+          </button>
+        </div>
+      </div>
+  </form>
+
+  <script type="text/ng-template" id="deleteConfirm.html">
+    <div class="modal-header">
+    <h3 class="modal-title">Löschen einer Messreihe</h3>
+    </div>
+    <div class="modal-body">
+    <p>
+      Sind Sie sich sicher, dass sie die Messreihe <b>{{series.name}}</b> <b>unwiederruflich</b> löschen möchten?
+    </p>
+    </div>
+    <div class="modal-footer">
+    <button class="btn btn-danger" ng-click="confirm()">
+      <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+      Unwiederruflich Löschen
+    </button>
+    <button class="btn btn-warning" ng-click="cancel()">Abbrechen</button>
+    </div>
+  </script>
+
+</div>
+</div>
