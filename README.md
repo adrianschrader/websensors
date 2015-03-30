@@ -8,9 +8,9 @@ craneduino is a lightweight web application that is designed to run time consumi
 ### Server
 - [Arduino](http://www.arduino.cc) Microcontroller to generate data
 - [NodeJS](https://nodejs.org) Server-Side-Javascript platform
-- [Express](https://expressjs.com) - NodeJS library to create the REST api
+- [Express](http://expressjs.com) - NodeJS library to create the REST api
 - [Johnny Five](https://github.com/rwaldron/johnny-five/) - NodeJS library to communicate with the Arduino
 
 ### Client
 - [AngularJS](https://angularjs.org) Javascript framework for dynamic web applications
-- [Flot](https://flotcharts.org) - Library to visualize data with any kind of plot or chart
+- [Flot](http://flotcharts.org) - Library to visualize data with any kind of plot or chart
