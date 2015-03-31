@@ -6,7 +6,7 @@ angular.module('craneduino')
       'name': {
         'size': {
           'min': 3,
-          'max': 20,
+          'max': 40,
           'message': 'Der Name der Messreihe muss zwischen 3 und 20 Zeichen lang sein.'
         },
         'required': {
@@ -32,7 +32,7 @@ angular.module('craneduino')
           'message': 'Messwerte können schnellstens alle 200ms erfasst werden.'
         },
         'max': {
-          'value': 1800,
+          'value': 1800000,
           'message': 'Es muss mindestens alle 30min (1800sec) ein Messwert erfasst werden.'
         },
         'required': {

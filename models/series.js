@@ -14,13 +14,22 @@ var seriesSchema = new mongoose.Schema({
     default: 'Queued',
     enum: 'OnHold Queued InProgress Finished Error'.split(' ')
   },
+  priority: {
+    type: Number,
+    min: -1,
+    max: 2,
+    default: 0,
+    required: true
+  },
   frequency: {
     type: Number,
     default: 1000,
+    required: true
   },
   duration: {
     type: Number,
-    default: 300
+    default: 300,
+    required: true
   },
   starttime: {
     type: Date,

@@ -17,7 +17,7 @@
     <li role="presentation" class="success {{ createMode ? 'active' : ''}}">
       <a href="/#/series?create=true">
         <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
-        Neue Messreihe hinzufügen ({{seriesList.length}}/6)
+        Neue Messreihe hinzufügen
       </a>
     </li>
     <!--<li role="presentation" ng-show="ReadingList.length >= 6">
@@ -30,10 +30,13 @@
 </div>
 
 <div class="col-md-9 col-sm-12">
-  <form name="seriesForm" role="form" class="form-horizontal" novalidate valdr-type="Series">
+<tabset justified="true">
+  <tab heading="Eigenschaften">
+    <br/>
+    <form name="seriesForm" role="form" class="form-horizontal" novalidate valdr-type="Series">
       <div class="form-group">
         <label for="name"
-          class="col-md-2 control-label">Name</label>
+        class="col-md-2 control-label">Name</label>
         <div valdr-form-group class="col-md-10">
           <input type="text" id="name" name="name"
           class="form-control" placeholder="Name" ng-model="series.name"/>
@@ -41,73 +44,110 @@
       </div>
       <div  class="form-group">
         <label for="description"
-          class="col-md-2 control-label">Beschreibung</label>
+        class="col-md-2 control-label">Beschreibung</label>
         <div valdr-form-group class="col-md-10">
           <textarea id="description" name="description" class="form-control"
-            placeholder="Beschreibung" ng-model="series.description"></textarea>
+          placeholder="Beschreibung" ng-model="series.description"></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="duration"
+        class="col-md-2 control-label">Dauer (sec.)</label>
+        <div valdr-form-group class="col-md-4">
+          <input type="text" id="duration" name="duration"
+          class="form-control" placeholder="Dauer" ng-model="series.duration"/>
+        </div>
+        <label for="frequency" class="col-md-2 control-label">Frequenz (ms)</label>
+        <div valdr-form-group class="col-md-4">
+          <input type="text" id="frequency" name="frequency"
+          class="form-control" placeholder="Frequenz" ng-model="series.frequency"/>
         </div>
       </div>
       <div class="form-group">
         <label for="status" class="col-md-2 control-label">Status</label>
-        <div valdr-form-group class="col-md-10">
-          <p id="status" class="form-control-static" ng-model="series.status"></p>
+        <div valdr-form-group class="col-md-4">
+          <input id="status" name="status" type="text" class="form-control" ng-model="series.status" readonly />
         </div>
-      </div>
-      <div class="form-group">
         <label for="priority"
         class="col-md-2 control-label">Priorität</label>
-        <div class="col-md-10">
-          <!--<div id="priority" class="btn-group">
-            <label class="btn btn-default" ng-model="series.priority"
-            btn-radio="'-1'">Niedrig</label>
-            <label class="btn btn-primary" ng-model="series.priority"
-            btn-radio="'0'">Normal</label>
-            <label class="btn btn-warning" ng-model="series.priority"
-            btn-radio="'1'">Wichtig</label>
-            <label class="btn btn-danger" ng-model="series.priority"
-            btn-radio="'2'">Sehr Wichtig</label>
-          </div>-->
-          <input id="priority" name="priority" type="text" value="0"  />
+        <div valdr-form-group class="col-md-4">
+          <select id="priority" name="priority" class="form-control" ng-model="series.priority">
+            <option value="-1">Belanglos</option>
+            <option value="0">Normal</option>
+            <option value="1">Wichtig</option>
+            <option value="2">Sehr Wichtig</option>
+          </select>
         </div>
       </div>
-      <div class="form-group">
-        <label for="unit"
-        class="col-md-2 control-label">Einheit</label>
-        <div valdr-form-group class="col-md-10">
-          <input type="text" id="unit" name="unit"
-          class="form-control" placeholder="Einheit" ng-model="series.unit"/>
+      <div class="form-group row">
+        <label for="starttime"
+        class="col-md-2 control-label">Startzeit</label>
+        <div valdr-form-group class="col-md-4">
+          <input type="text" id="starttime" name="starttime"
+          class="form-control" placeholder="Startzeit" readonly value="{{series.starttime | date: 'dd.MM.yyyy \'um\' HH:mm:ss \'Uhr\''}}"/>
         </div>
-      </div>
-      <div class="form-group">
-        <label for="rangeMin" class="col-md-2 control-label">Wertebereich (Min)</label>
-        <div valdr-form-group class="col-md-10">
-          <!--<slider range="true" name="seriesRange" ng-model="series.raw_range" step="5" min="-500" max="500"></slider>-->
-          <input type="text" id="rangeMin" name="range.min"
-          class="form-control" placeholder="Wertebereich (Minimum)" ng-model="series.range.min"/>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="rangeMax" class="col-md-2 control-label">Wertebereich (Max)</label>
-        <div valdr-form-group class="col-md-10">
-          <!--<slider range="true" name="seriesRange" ng-model="series.raw_range" step="5" min="-500" max="500"></slider>-->
-          <input type="text" id="rangeMax" name="range.max"
-          class="form-control" placeholder="Wertebereich (Maximum)" ng-model="series.range.max"/>
+        <label for="endtime"
+        class="col-md-2 control-label">Endzeit</label>
+        <div valdr-form-group class="col-md-4">
+          <input type="text" id="endtime" name="endtime"
+          class="form-control" placeholder="Endzeit" readonly value="{{series.endtime | date: 'dd.MM.yyyy \'um\' HH:mm:ss \'Uhr\''}}"/>
         </div>
       </div>
       <div class="form-group">
         <label for="seriesSave" class="col-md-2 control-label"></label>
         <div valdr-form-group class="col-md-10">
-          <button class="btn btn-primary" ng-disabled="saving || seriesForm.$invaild" ng-click="update()">
-            <span class="glyphicon {{ createMode ? glyphicon-plus-sign : 'glyphicon-floppy-save'" aria-hidden="true"></span>
+          <button class="btn btn-primary" ng-disabled="saving" ng-click="update(this)">
+            <span class="glyphicon {{ createMode ? glyphicon-plus-sign : glyphicon-floppy-save" aria-hidden="true"></span>
             {{ createMode ? 'Hinzufügen' : 'Änderungen speichern' }} {{ saving ? '...' : '' }}
           </button>
-          <button class="btn btn-danger" ng-hide="createMode" ng-disabled="deleting" ng-click="delete()">
+          <button class="btn btn-danger" ng-hide="createMode" ng-disabled="deleting" ng-click="delete(this)">
             <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
             Löschen{{ deleting ? '...' : '' }}
           </button>
         </div>
       </div>
-  </form>
+    </form>
+  </tab>
+  <tab ng-hide="createMode" heading="Sensoren">
+    <table st-table="series.sensors" class="table table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <!--<th>Beschreibung</th>-->
+          <th>Type</th>
+          <th>Pin</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="sensor in series.sensors">
+          <td>{{sensor.name}}</td>
+          <!--<td>{{sensor.description | limitTo: 40 }}</td>-->
+          <td>{{getDisplayName('type', sensor)}}</td>
+          <td>{{sensor.pin}}</td>
+          <td><button class="btn btn-danger btn-sm" ng-click="deleteSensor(sensor)">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+          </button></td>
+        </tr>
+        <tr ng-hide="sensorListDiff.length <= 0">
+          <td>
+            <select class="form-control input-sm" ng-options="sensor as sensor.name for sensor in sensorListDiff" ng-model="newSensor" ng-change="getSensor(newSensor._id)">
+            </select>
+          </td>
+          <!--<td>{{newSensor.description | limitTo: 40 }}</td>-->
+          <td>{{getDisplayName('type',newSensor)}}</td>
+          <td>{{newSensor.pin}}</td>
+          <td><button class="btn btn-primary btn-sm" ng-click="addSensor(newSensor)">
+            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+          </button></td>
+        </tr>
+      </tbody>
+    </table>
+  </tab>
+  <tab ng-hide="createMode" heading="Messung">Static content</tab>
+</tabset>
+
+
 
   <script type="text/ng-template" id="deleteConfirm.html">
     <div class="modal-header">
@@ -115,7 +155,9 @@
     </div>
     <div class="modal-body">
     <p>
-      Sind Sie sich sicher, dass sie die Messreihe <b>{{series.name}}</b> <b>unwiederruflich</b> löschen möchten?
+      Sind Sie sich sicher, dass sie die Messreihe <b>{{series.name}}</b> und <b>alle dazugehörigen Messwerte</b> unwiederruflich löschen möchten? Es bleiben keine Kopien auf dem Server zurück. <br />
+
+      Die Daten sind ohne ein Backup Ihrerseits <b>nicht mehr wiederherzustellen</b>.
     </p>
     </div>
     <div class="modal-footer">

@@ -6,7 +6,15 @@ angular.module('craneduinoControllers')
 ['$scope', '$resource', '$routeParams', 'valdr', '$modal', '$location',
 function($scope, $resource, $routeParams, valdr, $modal, $location) {
 
-  var Series = $resource('/series/:seriesId', { seriesId: '@id', command: '@cmd' }, {
+  var Series = $resource('/series/:seriesId/:command', { seriesId: '@id', command: '@cmd' }, {
+    'list':     { method: 'GET', isArray: true },
+    'get':      { method: 'GET', isArray: false },
+    'create':   { method: 'POST' },
+    'save':     { method: 'PUT' },
+    'delete':   { method: 'DELETE' }
+  });
+
+  var Sensor = $resource('/sensors/:sensorId', { sensorId: '@id' }, {
     'list':     { method: 'GET', isArray: true },
     'get':      { method: 'GET', isArray: false },
     'create':   { method: 'POST' },
@@ -51,35 +59,44 @@ function($scope, $resource, $routeParams, valdr, $modal, $location) {
     });
   };
 
-  $scope.create = function create() {
+  $scope.create = function create(form) {
     Series.create($scope.series, function(res) {
       $location.url('/series/' + res._id);
       $location.path('/series/' + res._id);
     })
   }
 
-  $scope.update = function update() {
-    if ($scope.seriesForm.$invaild)
+  $scope.update = function update(form) {
+    if (form.$invaild)
       return;
-
-    if ($scope.pinUndefined) {
-      $scope.series.pin = 'None';
-    }
 
     if ($scope.createMode) {
-      $scope.create();
+      $scope.create(form);
       return;
     }
 
-
     $scope.saving = true;
-
     $scope.series.$save({ seriesId: $scope.series._id },
       function() {
         $scope.saving = false;
     });
   };
 
+  $scope.addSensor = function addSensor(sensor) {
+    Series.create({ seriesId: $scope.series._id, command: 'sensors' }, { _id: sensor._id }, function(res) {
+      $scope.series.sensors.push(sensor);
+      $scope.sensorListDiff.splice($scope.sensorListDiff.indexOf(sensor), 1);
+      $scope.newSensor = {};
+    })
+  };
+
+  $scope.deleteSensor = function deleteSensor(sensor) {
+    Series.delete({ seriesId: $scope.series._id, command: 'sensors' }, { _id: sensor._id }, function(res) {
+      $scope.sensorListDiff.push(sensor);
+      $scope.series.sensors.splice($scope.series.sensors.indexOf(sensor), 1);
+      $scope.newSensor = {};
+    })
+  };
 
   $scope.seriesList = Series.list({}, function() {
     var seriesId =  $routeParams.seriesId || $scope.seriesList[0]._id;
@@ -88,20 +105,59 @@ function($scope, $resource, $routeParams, valdr, $modal, $location) {
         return;
     }
     $scope.series = Series.get({ seriesId: seriesId }, function() {
-      manipulateSeries();
+      if ($scope.createMode)
+        return;
+
+      $scope.series.sensors = Series.list({ seriesId: seriesId, command: 'sensors' }, function() {
+        $scope.sensorList = Sensor.list({}, function() {
+
+
+          var diff = _.difference(_.pluck($scope.sensorList, "_id"), _.pluck($scope.series.sensors, "_id"));
+          $scope.sensorListDiff = _.filter($scope.sensorList, function(obj) {
+            return diff.indexOf(obj._id) >= 0;
+          });
+
+          //$scope.newSensor = $scope.sensorListDiff[0] || {};
+          $scope.newSensor = {};
+        });
+      });
+
     });
   });
 
-  var manipulateSeries = function manipulateSeries() {
-      var slider = $('#priority').slider({
-        ticks: [ 0, 100, 200, 300 ],
-        ticks_labels: [ 'Belanglos', 'Normal', 'Wichtig', 'Sehr Wichtig' ],
-        ticks_snap_bounds: 1,
-        value: 0
-      });
 
-  };
 
+
+  // Set options for sensor type
+  var sensorTypes = 'General Temperature LDR Pressure Volume Distance Voltage Pulse Shock Humidity SeismicActivity AirFlow WaterLevel UltrasonicSensor Gyroscope'.split(' ');
+
+  var sensorTypeDisplayNames = 'Allgemein,Temperatur,LDR,Druck,Volumen,Distanz,Spannung,Puls,Erschütterung,Feuchtigkeit,Seismische Activität, Luftzug,Wasserstand,Ultraschallsensor,Gyroskop'.split(',');
+
+  $scope.sensorTypes = {};
+  for (var i = 0; i < sensorTypes.length; i++) {
+    $scope.sensorTypes[sensorTypes[i]] = sensorTypeDisplayNames[i];
+  }
+
+  $scope.getDisplayName = function getDisplayName(attr, sensor){
+    if (!sensor)
+      return '';
+
+    if (attr == 'type')
+      return $scope.sensorTypes[sensor.type];
+    else
+      return sensor[attr];
+  }
+
+
+
+  $scope.getSensor = function getSensor(id) {
+    for (var i = 0; i < $scope.sensorList.length; i++) {
+      if ($scope.sensorList[i]._id == id) {
+        $scope.newSensor = $scope.sensorList[i];
+        return;
+      }
+    }
+  }
 
 }])
 

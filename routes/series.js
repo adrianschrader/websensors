@@ -18,6 +18,9 @@ router.get('/', function(req, res, next) {
 /* POST series. */
 router.post('/', function(req, res, next) {
   delete req.body.status;
+  delete req.body.starttime;
+  delete req.body.endtime;
+  delete req.body.sensors;
 
   var series = new Series(req.body);
 
@@ -43,19 +46,28 @@ router.get('/:id', function(req, res, next) {
 
 /* DELETE series. */
 router.delete('/:id', function(req, res, next) {
-  Series.remove({ _id: req.params.id }, function(err) {
+  Reading.remove({ _series: req.params.id }, function(err) {
     if (err) {
       return next(err);
     }
 
-    res.sendStatus(200);
+    Series.remove({ _id: req.params.id }, function(err) {
+      if (err) {
+        return next(err);
+      }
+
+      res.sendStatus(200);
+    });
   });
+
 });
 
 /* UPDATE series. */
 router.put('/:id', function(req, res, next) {
   delete req.body.status;
-  delete req.body._id;
+  delete req.body.starttime;
+  delete req.body.endtime;
+  delete req.body.sensors;
 
   Series.findOne({ _id: req.params.id }, function(err, series) {
     if (err) {
@@ -97,6 +109,25 @@ router.post('/:id/sensors', function(req, res, next) {
     }
 
     series.sensors.push(req.body._id);
+
+    series.save(function(err, series) {
+      if (err) {
+        return next(err);
+      }
+
+      res.send(series);
+    });
+  });
+});
+
+/* DELETE relation sensor. */
+router.delete('/:id/sensors', function(req, res, next) {
+  Series.findOne({ _id: req.params.id }, function(err, series) {
+    if (err) {
+      return next(err);
+    }
+
+    series.sensors.splice(series.sensors.indexOf(req.body._id), 1);
 
     series.save(function(err, series) {
       if (err) {

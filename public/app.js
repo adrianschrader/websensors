@@ -7,6 +7,7 @@ angular.module('craneduino', [
 'ui.bootstrap',
 'ui.bootstrap-slider',
 'angular-flot',
+'smart-table',
 'valdr',
 'craneduinoControllers'
 ])

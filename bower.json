@@ -17,7 +17,9 @@
     "angular-flot": "~0.0.6",
     "valdr": "~1.1.1",
     "angular-bootstrap-slider": "~0.1.1",
-    "jquery": "~2.1.3"
+    "jquery": "~2.1.3",
+    "angular-smart-table": "~2.0.1",
+    "underscore": "~1.8.2"
   },
   "ignore": [
     "**/.*",
