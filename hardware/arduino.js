@@ -8,34 +8,40 @@ var mongoose  = require('mongoose'),
 
 var board, series, sensors, occupied = false, connected = false;
 
-//board = five.Board();
+board = five.Board();
+
+board.on('ready', function() {
+  connected = true;
+});
 
 var endMessurement = function endMessurement() {
   Series.findOne({ _id: series._id }, function(err, series){
     if (err)
       console.log(err);
 
-      series.status = 'Finished';
-      series.endtime = Date.now();
+    series.status = 'Finished';
+    series.endtime = Date.now();
 
-      series.save(function(err, series) {
-        if (err)
-          console.log(err);
+    series.save(function(err, series) {
+      if (err)
+        console.log(err);
 
-          occupied = false;
-          series = null;
-        });
+        occupied = false;
+        series = null;
       });
+    });
 };
 
 var initialize = function initialize() {
-  var sensors = [];
+  var values = [];
 
   for (var i = 0; i < series.sensors.length; i++) {
     var sensor = series.sensors[i];
 
-    if (sensor.pin != 'None')
-      continue;
+    if (sensor.pin == 'None')
+      break;
+
+
 
     var new_sensor = new five.Sensor({
       pin: sensor.pin,
@@ -46,24 +52,33 @@ var initialize = function initialize() {
 
     new_sensor.scale([ sensor.range.min, sensor.range.max ])
     .on('data', function() {
-      if (+Date.now() - series.starttime > series.duration * 1000 || !occupied) {
+
+      if ((Date.now() - new Date(series.starttime)) > series.duration * 1000 && occupied) {
         endMessurement();
+        return;
+      } else if(!occupied) {
         return;
       }
 
-      var reading = new Reading({ value: this.value, _sensor: this.model._id, _series: series._id, time: +Date.now() });
-      reading.save(function(err, reading) {
-        if (err)
-          console.log(err);
+      values.push({ value: this.value, _sensor: this.model._id });
+
+      if (values.length == series.sensors.length) {
+        var reading = new Reading({ sensors: values, _series: series._id, time: (Date.now()) });
+        reading.save(function(err, reading) {
+          if (err)
+            console.log(err);
+
+          values = [];
 
           console.log('Beep!', reading);
         });
-      });
-    }
-
-    board.repl.inject({
-      sensors: sensors
+      }
     });
+  }
+
+  board.repl.inject({
+    sensors: sensors
+  });
 };
 
 /* GET (stop series). */
@@ -83,7 +98,7 @@ router.get('/series/:id/start', function(req, res, next) {
     if (occupied)
       return next(new Error("Arduino already occupied with another series. "));
 
-    if (!connection)
+    if (!connected)
       return next(new Error("There is no Arduino connection. "));
 
     // Set properties in series
@@ -95,9 +110,15 @@ router.get('/series/:id/start', function(req, res, next) {
     series = _.clone(obj);
     occupied = true;
 
-    initialize();
+    Reading.remove({ _series: series._id }, function(err) {
+      if (err) {
+        return next(err);
+      }
 
-    res.sendStatus(200);
+      initialize();
+
+      res.sendStatus(200);
+    });
   });
 });
 

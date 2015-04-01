@@ -28,10 +28,9 @@
     </li>-->
   </ul>
 </div>
-
 <div class="col-md-9 col-sm-12">
 <tabset justified="true">
-  <tab heading="Eigenschaften">
+  <tab heading="Eigenschaften" ng-click="onTabSelect('properties')">
     <br/>
     <form name="seriesForm" role="form" class="form-horizontal" novalidate valdr-type="Series">
       <div class="form-group">
@@ -55,12 +54,12 @@
         class="col-md-2 control-label">Dauer (sec.)</label>
         <div valdr-form-group class="col-md-4">
           <input type="text" id="duration" name="duration"
-          class="form-control" placeholder="Dauer" ng-model="series.duration"/>
+          class="form-control" placeholder="Dauer" ng-readonly="readMode" ng-model="series.duration"/>
         </div>
         <label for="frequency" class="col-md-2 control-label">Frequenz (ms)</label>
         <div valdr-form-group class="col-md-4">
           <input type="text" id="frequency" name="frequency"
-          class="form-control" placeholder="Frequenz" ng-model="series.frequency"/>
+          class="form-control" placeholder="Frequenz" ng-readonly="readMode" ng-model="series.frequency"/>
         </div>
       </div>
       <div class="form-group">
@@ -71,7 +70,7 @@
         <label for="priority"
         class="col-md-2 control-label">Priorität</label>
         <div valdr-form-group class="col-md-4">
-          <select id="priority" name="priority" class="form-control" ng-model="series.priority">
+          <select id="priority" name="priority" ng-disabled="readMode" class="form-control" ng-model="series.priority">
             <option value="-1">Belanglos</option>
             <option value="0">Normal</option>
             <option value="1">Wichtig</option>
@@ -96,7 +95,7 @@
       <div class="form-group">
         <label for="seriesSave" class="col-md-2 control-label"></label>
         <div valdr-form-group class="col-md-10">
-          <button class="btn btn-primary" ng-disabled="saving" ng-click="update(this)">
+          <button class="btn btn-primary" ng-disabled="saving" ng-hide="readMode" ng-click="update(this)">
             <span class="glyphicon {{ createMode ? glyphicon-plus-sign : glyphicon-floppy-save" aria-hidden="true"></span>
             {{ createMode ? 'Hinzufügen' : 'Änderungen speichern' }} {{ saving ? '...' : '' }}
           </button>
@@ -108,7 +107,7 @@
       </div>
     </form>
   </tab>
-  <tab ng-hide="createMode" heading="Sensoren">
+  <tab ng-hide="createMode" heading="Sensoren" ng-click="onTabSelect('sensors')">
     <table st-table="series.sensors" class="table table-hover">
       <thead>
         <tr>
@@ -125,11 +124,11 @@
           <!--<td>{{sensor.description | limitTo: 40 }}</td>-->
           <td>{{getDisplayName('type', sensor)}}</td>
           <td>{{sensor.pin}}</td>
-          <td><button class="btn btn-danger btn-sm" ng-click="deleteSensor(sensor)">
+          <td><button class="btn btn-danger btn-sm" ng-hide="readMode" ng-click="deleteSensor(sensor)">
             <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
           </button></td>
         </tr>
-        <tr ng-hide="sensorListDiff.length <= 0">
+        <tr ng-hide="sensorListDiff.length <= 0 || readMode">
           <td>
             <select class="form-control input-sm" ng-options="sensor as sensor.name for sensor in sensorListDiff" ng-model="newSensor" ng-change="getSensor(newSensor._id)">
             </select>
@@ -144,7 +143,53 @@
       </tbody>
     </table>
   </tab>
-  <tab ng-hide="createMode" heading="Messung">Static content</tab>
+  <tab ng-hide="createMode" heading="Messung" ng-click="onTabSelect('readings')">
+    <br />
+    <div class="row">
+      <div class="col-md-8">
+        <button ng-hide="(series.status != 'Queued' && series.status != 'OnHold') || series.sensors.length <= 0" class="btn btn-primary" ng-click="startSeries()">
+          <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+          Messung starten
+        </button>
+        <button ng-hide="series.status != 'Finished' && series.status != 'Error'" class="btn btn-primary" ng-click="startSeries()">
+          <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+          Messung wiederhohlen
+        </button>
+        <button ng-hide="series.status != 'InProgress'" class="btn btn-warning" ng-click="stopSeries()">
+          <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+          Messung stoppen
+        </button>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary right" ng-click="refreshReadings()">
+          <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+          Aktualisieren
+        </button>
+      </div>
+    </div>
+    <br/>
+    <table ng-hide="series.readings.length <= 0" st-table="series.readings" class="table table-hover">
+      <thead>
+        <tr>
+          <th>t [s]</th>
+          <th ng-repeat="sensor in displaySensors">{{sensor.name}} [{{sensor.unit}}]</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="reading in series.readings">
+          <td>{{reading.dt | number: 2}}</td>
+          <td ng-repeat="value in reading.sensors">{{value.value | number: 3}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="row" ng-show="series.readings.length <= 0">
+      Bisher wurden noch keine Messwerte aufgezeichnet. Bitte starten Sie eine Messung und aktualisieren sie die Anzeige.
+    </div>
+  </tab>
+  <tab ng-hide="createMode || series.readings.length <= 0" heading="Auswertung" ng-click="onTabSelect('charts')">
+    <div id="splineChart">
+    </div>
+  </tab>
 </tabset>
 
 
