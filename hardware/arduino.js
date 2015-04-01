@@ -86,7 +86,7 @@ router.get('/series/:id/start', function(req, res, next) {
 
       board.loop(20, function() {
         if ((Date.now() - new Date(series.starttime)) > series.duration * 1000 && occupied) {
-          endMessurement();
+          endMeasurement();
           return;
         } else if(!occupied) {
           return;
