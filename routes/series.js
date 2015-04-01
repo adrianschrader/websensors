@@ -141,7 +141,7 @@ router.delete('/:id/sensors', function(req, res, next) {
 
 /* GET list of relation reading. */
 router.get('/:id/readings', function(req, res, next) {
-  Reading.find({ _series: req.params.id }, function(err, readings) {
+  Reading.find({ _series: req.params.id }).sort({time:1}).exec(function(err, readings) {
     if (err) {
       return next(err);
     }
@@ -157,7 +157,21 @@ router.delete('/:id/readings', function(req, res, next) {
       return next(err);
     }
 
-    res.sendStatus(200);
+    Series.findOne({ _id: req.params.id }, function(err, series) {
+      if (err) {
+        return next(err);
+      }
+
+      series.status = 'Queued';
+
+      series.save(function(err, series) {
+        if (err) {
+          return next(err);
+        }
+
+        res.sendStatus(200);
+      });
+    });
   });
 });
 

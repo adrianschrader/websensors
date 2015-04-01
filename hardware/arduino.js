@@ -6,15 +6,17 @@ var mongoose  = require('mongoose'),
     Series = require('../models/series'),
     router = express.Router();
 
-var board, series, sensors, occupied = false, connected = false;
+var board, running_series, series, values = {}, occupied = false, connected = false, lastLoop = Date.now();
 
-board = five.Board();
-
+board = new five.Board();
 board.on('ready', function() {
   connected = true;
+  occupied = false;
+
+  initialize(this, 0);
 });
 
-var endMessurement = function endMessurement() {
+var endMeasurement = function endMeasurement() {
   Series.findOne({ _id: series._id }, function(err, series){
     if (err)
       console.log(err);
@@ -32,59 +34,26 @@ var endMessurement = function endMessurement() {
     });
 };
 
-var initialize = function initialize() {
-  var values = [];
+var analogPins = 'A0 A1 A2 A3 A4 A5'.split(' ');
+var initialize = function initialize(board, index) {
+  if (index >= analogPins.length)
+    return;
 
-  for (var i = 0; i < series.sensors.length; i++) {
-    var sensor = series.sensors[i];
-
-    if (sensor.pin == 'None')
-      break;
-
-
-
-    var new_sensor = new five.Sensor({
-      pin: sensor.pin,
-      freq: series.frequency
-    });
-
-    new_sensor.model = sensor;
-
-    new_sensor.scale([ sensor.range.min, sensor.range.max ])
-    .on('data', function() {
-
-      if ((Date.now() - new Date(series.starttime)) > series.duration * 1000 && occupied) {
-        endMessurement();
-        return;
-      } else if(!occupied) {
-        return;
-      }
-
-      values.push({ value: this.value, _sensor: this.model._id });
-
-      if (values.length == series.sensors.length) {
-        var reading = new Reading({ sensors: values, _series: series._id, time: (Date.now()) });
-        reading.save(function(err, reading) {
-          if (err)
-            console.log(err);
-
-          values = [];
-
-          console.log('Beep!', reading);
-        });
-      }
-    });
-  }
-
-  board.repl.inject({
-    sensors: sensors
+  board.analogRead(index, function(voltage) {
+    values[analogPins[index]] = voltage;
   });
+  initialize(board, index + 1);
 };
+
+var scaleReadings = function scaleReadings(value, min1, max1, min2, max2) {
+  var m = (max2 - min2) / (max1-min1);
+  return (m * value) + (min2 - (min1 * m));
+}
 
 /* GET (stop series). */
 router.get('/series/:id/stop', function(req, res, next) {
   if (series)
-    endMessurement();
+    endMeasurement();
   res.sendStatus(200);
 });
 
@@ -115,7 +84,36 @@ router.get('/series/:id/start', function(req, res, next) {
         return next(err);
       }
 
-      initialize();
+      board.loop(20, function() {
+        if ((Date.now() - new Date(series.starttime)) > series.duration * 1000 && occupied) {
+          endMessurement();
+          return;
+        } else if(!occupied) {
+          return;
+        }
+
+        if ((Date.now() - lastLoop) > series.frequency) {
+          lastLoop = Date.now();
+
+          var sensors = [];
+          for (var i = 0; i < series.sensors.length; i++) {
+            sensors.push({
+              value: scaleReadings(values[series.sensors[i].pin], 0, 1023,
+                series.sensors[i].range.min, series.sensors[i].range.max),
+              _sensor: series.sensors[i]._id
+            });
+          }
+
+          var reading = new Reading({ sensors: sensors, _series: series._id, time: Date.now() });
+          reading.save(function(err, reading) {
+            if (err) {
+              console.log(err);
+            }
+
+            console.log('Beep!', reading);
+          });
+        }
+      });
 
       res.sendStatus(200);
     });

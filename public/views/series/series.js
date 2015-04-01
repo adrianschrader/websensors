@@ -98,6 +98,12 @@ function($scope, $resource, $routeParams, valdr, $modal, $location) {
     })
   };
 
+  $scope.deleteReadings = function deleteReadings() {
+    Series.delete({ seriesId: $scope.series._id, relation: 'readings' }, function() {
+      $scope.getValues();
+    });
+  };
+
   $scope.refreshReadings = function refreshReadings() {
     $scope.series.readings = Series.list({ seriesId: $scope.series._id, relation: 'readings' }, function() {
       if ($scope.series.readings.length <= 0)

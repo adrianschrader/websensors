@@ -146,25 +146,33 @@
   <tab ng-hide="createMode" heading="Messung" ng-click="onTabSelect('readings')">
     <br />
     <div class="row">
-      <div class="col-md-8">
-        <button ng-hide="(series.status != 'Queued' && series.status != 'OnHold') || series.sensors.length <= 0" class="btn btn-primary" ng-click="startSeries()">
-          <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-          Messung starten
-        </button>
-        <button ng-hide="series.status != 'Finished' && series.status != 'Error'" class="btn btn-primary" ng-click="startSeries()">
-          <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
-          Messung wiederhohlen
-        </button>
-        <button ng-hide="series.status != 'InProgress'" class="btn btn-warning" ng-click="stopSeries()">
-          <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
-          Messung stoppen
-        </button>
-      </div>
-      <div class="col-md-2">
-        <button class="btn btn-primary right" ng-click="refreshReadings()">
-          <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
-          Aktualisieren
-        </button>
+      <div class="col-md-12">
+        <div class="btn-toolbar" role="toolbar">
+          <div class="btn-group" role="group">
+            <button ng-disabled="(series.status != 'Queued' && series.status != 'OnHold') || series.sensors.length <= 0" class="btn btn-primary" ng-click="startSeries()">
+              <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+              Starten
+            </button>
+            <!--<button ng-disabled="series.status != 'Finished' && series.status != 'Error'" class="btn btn-primary" ng-click="startSeries()">
+              <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+              Wiederhohlen
+            </button>-->
+            <button ng-disabled="series.status != 'InProgress'" class="btn btn-warning" ng-click="stopSeries()">
+              <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+              Stoppen
+            </button>
+          </div>
+          <div class="btn-group" role="group">
+            <button class="btn btn-primary right" ng-click="refreshReadings()">
+              <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+              Aktualisieren
+            </button>
+            <button class="btn btn-danger right" ng-click="deleteReadings()">
+              <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+              Werte löschen
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     <br/>
