@@ -5,7 +5,7 @@
   "bin": "./bin/www",
   "scripts": {
     "preinstall": "bower install",
-    "postinstall": "cp public/theme.min.css public/libraries/bootstrap/dist/css/bootstrap.min.css && cp public/theme.css public/libraries/bootstrap/dist/css/bootstrap.css",
+    "postinstall": "cp public/theme.min.css public/libraries/bootstrap/dist/css/bootstrap.min.css",
     "start": "node ./bin/www"
   },
   "dependencies": {
