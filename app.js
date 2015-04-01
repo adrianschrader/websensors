@@ -7,10 +7,10 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
 var series = require('./routes/series');
 var sensor = require('./routes/sensor');
 var reading = require('./routes/reading');
+var status = require('./routes/status');
 var hardware = require('./hardware/arduino');
 
 var app = express();
@@ -30,9 +30,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/', hardware);
 app.use('/series', series);
-app.use('/users', users);
 app.use('/sensors', sensor);
 app.use('/readings', reading);
+app.use('/status', status);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
