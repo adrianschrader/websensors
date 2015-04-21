@@ -1,3 +1,7 @@
+/**
+ * Model Reading
+ * Defines the database model for multiple sensor readings at a specific time
+ */
 var mongoose = require('mongoose');
 
 var readingSchema = new mongoose.Schema({
@@ -16,9 +20,9 @@ var readingSchema = new mongoose.Schema({
       required: true
     },
   }],
-  _series: {
+  _tub: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Series',
+    ref: 'Tub',
     required: true
   }
 });

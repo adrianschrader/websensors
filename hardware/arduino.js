@@ -1,6 +1,7 @@
 var mongoose  = require('mongoose'),
     express   = require('express'),
     five      = require('johnny-five'),
+    config    = require('config'),
     _         = require('underscore'),
     Reading = require('../models/reading'),
     Series = require('../models/series'),
@@ -8,13 +9,15 @@ var mongoose  = require('mongoose'),
 
 var board, running_series, series, values = {}, occupied = false, connected = false, lastLoop = Date.now();
 
-board = new five.Board();
-board.on('ready', function() {
-  connected = true;
-  occupied = false;
+if (config.get('arduino.enabled')) {
+  board = new five.Board();
+  board.on('ready', function() {
+    connected = true;
+    occupied = false;
 
-  initialize(this, 0);
-});
+    initialize(this, 0);
+  });
+}
 
 var endMeasurement = function endMeasurement() {
   Series.findOne({ _id: series._id }, function(err, series){
@@ -59,16 +62,21 @@ router.get('/series/:id/stop', function(req, res, next) {
 
 /* GET (start series). */
 router.get('/series/:id/start', function(req, res, next) {
+  if (!config.get('arduino.enabled'))
+    return next(new Error("The arduino connection is disabled in this application. If this behaviour is not appreciated, update the config/production.json "));
+
+  if (occupied)
+    return next(new Error("Arduino already occupied with another series. "));
+
+  if (!connected)
+    return next(new Error("There is no Arduino connection. "));
+
   Series.findOne({ _id: req.params.id }).populate('sensors').exec(function(err, obj) {
     if (err) {
       return next(err);
     }
 
-    if (occupied)
-      return next(new Error("Arduino already occupied with another series. "));
 
-    if (!connected)
-      return next(new Error("There is no Arduino connection. "));
 
     // Set properties in series
     obj.status = 'InProgress';

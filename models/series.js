@@ -1,3 +1,7 @@
+/**
+* Model Series
+* Depreciated
+*/
 var mongoose = require('mongoose');
 
 var seriesSchema = new mongoose.Schema({

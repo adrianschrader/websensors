@@ -1,0 +1,11 @@
+{
+  "mongodb": "mongodb://localhost/craneduino",
+  "monitoring": {
+    "enabled": true,
+    "frequency": "10000"
+  },
+  "arduino": {
+    "enabled": false
+  },
+  "server": "RaspberryPi Model B"
+}

@@ -1,17 +1,19 @@
-var express = require('express');
-var mongoose = require('mongoose')
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+var express       = require('express'),
+    mongoose      = require('mongoose'),
+    path          = require('path'),
+    favicon       = require('serve-favicon'),
+    logger        = require('morgan'),
+    cookieParser  = require('cookie-parser'),
+    bodyParser    = require('body-parser'),
+    config        = require('config');
 
-var routes = require('./routes/index');
-var series = require('./routes/series');
-var sensor = require('./routes/sensor');
-var reading = require('./routes/reading');
-var status = require('./routes/status');
-var hardware = require('./hardware/arduino');
+var routes    = require('./routes/index'),
+    series    = require('./routes/series'),
+    sensor    = require('./routes/sensor'),
+    reading   = require('./routes/reading'),
+    status    = require('./routes/status'),
+    hardware  = require('./hardware/arduino');
+    monitoring = require('./hardware/monitoring')();
 
 var app = express();
 
@@ -66,7 +68,7 @@ app.use(function(err, req, res, next) {
 });
 
 // Database connection
-mongoose.connect('mongodb://localhost/craneduino');
+mongoose.connect(config.get('mongodb'));
 
 
 module.exports = app;

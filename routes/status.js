@@ -1,8 +1,10 @@
-var os = require('os-utils');
-var express = require('express');
-var mongoose = require('mongoose');
-var Sensor = require('../models/sensor');
-var router = express.Router();
+var utils       = require('os-utils'),
+    os          = require('os'),
+    express     = require('express'),
+    config      = require('config'),
+    mongoose    = require('mongoose'),
+    Sensor      = require('../models/sensor'),
+    router      = express.Router();
 
 /* GET sensor listing. */
 router.get('/', function(req, res, next) {
@@ -12,24 +14,22 @@ router.get('/', function(req, res, next) {
     }
 
     res.send({
+      name: config.get('server'),
       linux: {
         type: os.type(),
-        platform: os.platform(),
-        arch: os.arch()
+        arch: os.arch(),
+        platform: utils.platform()
       },
       server: {
         uptime:  {
           system: os.uptime(),
-          process: os.processUptime()
+          process: utils.processUptime()
         },
-        loadavg: os.loadavg()
+        loadavg: utils.loadavg()
       },
       memory: {
         total: os.totalmem(),
         free:  os.freemem(),
-      },
-      cpu: {
-        count: os.countCPUs()
       }
     });
   });

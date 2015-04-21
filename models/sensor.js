@@ -1,3 +1,7 @@
+/**
+ * Model Sensor
+ * Defines the database model for a sensor that listens to a specified analog pin
+ */
 var mongoose = require('mongoose');
 
 var sensorSchema = new mongoose.Schema({

@@ -1,5 +1,7 @@
 # Created by https://www.gitignore.io
 
+config/production.json
+
 ### Windows ###
 # Windows image file caches
 Thumbs.db
